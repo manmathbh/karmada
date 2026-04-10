@@ -91,9 +91,9 @@ func (Strategy) PrepareForUpdate(_ context.Context, _, _ runtime.Object) {
 }
 
 // Validate returns an ErrorList with validation errors or nil.
-func (Strategy) Validate(_ context.Context, _ runtime.Object) field.ErrorList {
-	// TODO: add validation for ResourceRegistry
-	return field.ErrorList{}
+func (Strategy) Validate(_ context.Context, obj runtime.Object) field.ErrorList {
+	resourceRegistry := obj.(*searchapis.ResourceRegistry)
+	return validateResourceRegistry(resourceRegistry)
 }
 
 // WarningsOnCreate returns warnings for the creation of the given object.
@@ -117,9 +117,10 @@ func (Strategy) Canonicalize(_ runtime.Object) {
 
 // ValidateUpdate is invoked after default fields in the object have been
 // filled in before the object is persisted.
-func (Strategy) ValidateUpdate(_ context.Context, _, _ runtime.Object) field.ErrorList {
-	// TODO: add validation for ResourceRegistry
-	return field.ErrorList{}
+func (Strategy) ValidateUpdate(_ context.Context, obj, old runtime.Object) field.ErrorList {
+	newResourceRegistry := obj.(*searchapis.ResourceRegistry)
+	oldResourceRegistry := old.(*searchapis.ResourceRegistry)
+	return validateResourceRegistryUpdate(newResourceRegistry, oldResourceRegistry)
 }
 
 // WarningsOnUpdate returns warnings for the given update.
